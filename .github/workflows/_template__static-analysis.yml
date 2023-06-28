@@ -1,0 +1,34 @@
+name: (Template) Run Static Analysis
+
+on:
+  workflow_call:
+    secrets:
+      COMPOSER_AUTH:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Create auth.json (to avoid complex json escaping)
+        run: echo '${{ secrets.COMPOSER_AUTH }}' > ./auth.json
+      -
+        name: Build Docker Test Container
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          tags: php-docker
+          secret-files: |
+            "COMPOSER_AUTH=./auth.json"
+      -
+        name: Run Static Analysis
+        run: docker run -id php-docker composer run-tests

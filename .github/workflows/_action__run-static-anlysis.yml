@@ -1,0 +1,11 @@
+name: Run Static Anlysis
+
+on:
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  run-analysis:
+    uses: ./.github/workflows/_template__static-analysis.yml
+    secrets:
+      COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
