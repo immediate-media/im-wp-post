@@ -6,35 +6,22 @@ namespace IM\Fabric\Package\WpPost;
 
 class PostTypes
 {
+    private const EXCLUDE_LIST = ['elementor_library', 'e-landing-page', 'attachment'];
+
     public function getAllPublicTypes(): array
     {
-        $postTypes = get_post_types(['public' => true]);
+        $postTypes = get_post_types(['public' => true], 'objects');
 
-        sort($postTypes);
+        $out = [];
+        foreach ($postTypes as $postTypeName => $postType) {
+            $out[$postType->label] = $postTypeName;
+        }
 
-        return array_values($postTypes);
+        return $out;
     }
 
-    public function getCustomPublicTypes(): array
+    public function getEditorialPostTypes(): array
     {
-        $postTypes = get_post_types(['public' => true, '_builtin' => false]);
-
-        sort($postTypes);
-
-        return array_values($postTypes);
-    }
-
-    public function getWordpressDefaultPublicTypes(): array
-    {
-        $postTypes = get_post_types(['public' => true, '_builtin' => true]);
-
-        sort($postTypes);
-
-        return array_values($postTypes);
-    }
-
-    public function removeIgnoredPostTypes(array $postTypes, array $ignoredPostTypes): array
-    {
-        return array_values(array_diff($postTypes, $ignoredPostTypes));
+        return array_filter($this->getAllPublicTypes(), fn($item) => !in_array($item, self::EXCLUDE_LIST));
     }
 }

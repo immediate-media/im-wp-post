@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use WP_Mock;
+use WP_Post_Type;
 
 class PostTypesTest extends TestCase
 {
@@ -24,35 +25,32 @@ class PostTypesTest extends TestCase
     {
         WP_Mock::userFunction('get_post_types', [
             'times' => 1,
-            'args' => [['public' => true]],
-            'return' => ['post' => 'post', 'offer' => 'offer'],
+            'args' => [['public' => true], 'objects'],
+            'return' => [
+                'post' => new WP_Post_Type('post', 'Articles'),
+                'how_to' => new WP_Post_Type('how_to', 'How To'),
+            ],
         ]);
 
-        $expected = ['offer', 'post'];
+        $expected = ['Articles' => 'post', 'How To' => 'how_to'];
         $this->assertSame($expected, $this->unit->getAllPublicTypes());
     }
 
-    public function testGetCustomPublicTypes()
+    public function testGetEditorialPostTypes()
     {
         WP_Mock::userFunction('get_post_types', [
             'times' => 1,
-            'args' => [['public' => true, '_builtin' => false]],
-            'return' => ['post' => 'post', 'offer' => 'offer'],
+            'args' => [['public' => true], 'objects'],
+            'return' => [
+                'post' => new WP_Post_Type('post', 'Articles'),
+                'how_to' => new WP_Post_Type('how_to', 'How To'),
+                'attachment' => new WP_Post_Type('attachment', 'attachment'),
+                'elementor_library' => new WP_Post_Type('elementor_library', 'elementor_library'),
+                'e-landing-page' => new WP_Post_Type('e-landing-page', 'e-landing-page'),
+            ],
         ]);
 
-        $expected = ['offer', 'post'];
-        $this->assertSame($expected, $this->unit->getCustomPublicTypes());
-    }
-
-    public function testGetWordpressDefaultPublicTypes()
-    {
-        WP_Mock::userFunction('get_post_types', [
-            'times' => 1,
-            'args' => [['public' => true, '_builtin' => true]],
-            'return' => ['post' => 'post', 'offer' => 'offer'],
-        ]);
-
-        $expected = ['offer', 'post'];
-        $this->assertSame($expected, $this->unit->getWordpressDefaultPublicTypes());
+        $expected = ['Articles' => 'post', 'How To' => 'how_to'];
+        $this->assertSame($expected, $this->unit->getEditorialPostTypes());
     }
 }

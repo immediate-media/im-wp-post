@@ -1,5 +1,24 @@
 # IM WP POST
-- Get post types for WordPress 
+- Get post types for WordPress
+
+## Example usage
+
+```php
+<?php
+    use IM\Fabric\Package\WpPost\PostTypes;
+
+    $postTypes = new PostTypes();
+    $postTypes->getAllPublicTypes();
+
+    // Get editorial post types - this mean all public but with excluded list
+    // ['elementor_library', 'e-landing-page', 'attachment']
+    $postTypes->getEditorialPostTypes();
+
+    // Output is associative array where key is post type Label and value is the post type Name
+```
+
+***
+
 
 ## Static Analysis
 This plugin comes with the following pre-configured static analysis checks:
